@@ -1,0 +1,54 @@
+---
+import LangSwitch from '../LangSwitch.astro';
+import { type Lang, homePath } from '../../i18n/lang';
+import { ui } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  /** Bu sayfanın her dildeki adresi */
+  paths: Record<Lang, string>;
+}
+
+const { lang, paths } = Astro.props;
+---
+
+<a class="back" href={`${homePath[lang]}#work`}>
+  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M13 8H3M7 4 3 8l4 4"></path>
+  </svg>
+  {ui[lang].back}
+</a>
+<LangSwitch lang={lang} paths={paths} />
+
+<style>
+  .back {
+    position: absolute;
+    top: 40px;
+    left: var(--page-gutter);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: var(--muted-2);
+    transition: color 0.15s;
+  }
+
+  .back:hover {
+    color: var(--ink);
+  }
+
+  .back:focus-visible {
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  @media (width <= 700px) {
+    .back {
+      top: 16px;
+      left: 24px;
+    }
+  }
+</style>

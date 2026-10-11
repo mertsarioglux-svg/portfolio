@@ -4,9 +4,11 @@ import { ui } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
+  /** Bu sayfanın her dildeki adresi; verilmezse ana sayfalar */
+  paths?: Record<Lang, string>;
 }
 
-const { lang } = Astro.props;
+const { lang, paths = homePath } = Astro.props;
 ---
 
 <nav class="lang-switch" aria-label={ui[lang].langLabel}>
@@ -14,7 +16,7 @@ const { lang } = Astro.props;
     languages.map((l, i) => (
       <>
         {i > 0 && <span aria-hidden="true">/</span>}
-        <a href={homePath[l]} hreflang={l} lang={l} aria-current={l === lang ? 'page' : undefined}>
+        <a href={paths[l]} hreflang={l} lang={l} aria-current={l === lang ? 'page' : undefined}>
           {l.toUpperCase()}
         </a>
       </>

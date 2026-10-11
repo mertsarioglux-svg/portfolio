@@ -2,7 +2,7 @@
 import { getImage, Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Footer from './Footer.astro';
-import NavIsland from './case/NavIsland.astro';
+import ProjectNav from './case/ProjectNav.astro';
 import SectionPill from './case/SectionPill.astro';
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site';
@@ -34,7 +34,7 @@ const ogImage = await getImage({ src: data.hero, width: 1200, format: 'jpeg' });
   image={ogImage.src}
 >
   <a class="skip" href="#content">{ui[lang].skipContent}</a>
-  <NavIsland lang={lang} paths={paths} />
+  <ProjectNav lang={lang} paths={paths} />
 
   <header class="project-hero" style={`--tint:${data.tint}`}>
     <div class="intro">
