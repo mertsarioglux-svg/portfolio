@@ -86,8 +86,8 @@ export const site = {
 
   footer: {
     heading: {
-      tr: ['Birlikte güzel bir şey', 'inşa edelim'],
-      en: ['Let’s build something', 'people care about'],
+      tr: ['Bana buradan', 'ulaşabilirsiniz'],
+      en: ['You can', 'reach me here'],
     },
   },
 };
