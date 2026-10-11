@@ -1,0 +1,58 @@
+---
+import { type Lang, homePath, languages } from '../i18n/lang';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<nav class="lang-switch" aria-label={ui[lang].langLabel}>
+  {
+    languages.map((l, i) => (
+      <>
+        {i > 0 && <span aria-hidden="true">/</span>}
+        <a href={homePath[l]} hreflang={l} lang={l} aria-current={l === lang ? 'page' : undefined}>
+          {l.toUpperCase()}
+        </a>
+      </>
+    ))
+  }
+</nav>
+
+<style>
+  .lang-switch {
+    position: absolute;
+    top: 40px;
+    right: var(--page-gutter);
+    z-index: 3;
+    display: flex;
+    gap: 6px;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    color: var(--muted-2);
+  }
+
+  a {
+    transition: color 0.15s;
+  }
+
+  a:hover,
+  a[aria-current] {
+    color: var(--ink);
+  }
+
+  a:focus-visible {
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  @media (width <= 700px) {
+    .lang-switch {
+      top: 16px;
+      right: 24px;
+    }
+  }
+</style>

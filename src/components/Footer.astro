@@ -1,0 +1,147 @@
+---
+import { site } from '../data/site';
+import type { Lang } from '../i18n/lang';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const [line1, line2] = site.footer.heading[lang];
+const { socials, email } = site;
+
+const copy = {
+  tr: {
+    lead: 'Yeni projelere, staj ve iş birliklerine açığım. Bana ',
+    afterSocials: ' üzerinden ulaşabilirsin. İstersen ',
+    afterEmail: ' adresine e-posta da atabilirsin.',
+    or: ' ya da ',
+  },
+  en: {
+    lead: 'I’m open to new projects, internships and collaborations. You can find me on ',
+    afterSocials: '. If you’d like to reach out, you can also email me at ',
+    afterEmail: '.',
+    or: socials.length > 2 ? ', or ' : ' or ',
+  },
+}[lang];
+
+const separator = (i: number) => (i === socials.length - 1 ? '' : i === socials.length - 2 ? copy.or : ', ');
+---
+
+<footer aria-label={ui[lang].contactLabel}>
+  <h2>{line1}{' '}<br />{line2}</h2>
+  <p>
+    {copy.lead}
+    {
+      socials.map((social, i) => (
+        <>
+          <a class="social" href={social.href} target="_blank" rel="noopener noreferrer">
+            <span class="pill" style={`--c:${social.color}`}>{social.label}</span>
+          </a>
+          {separator(i)}
+        </>
+      ))
+    }
+    {copy.afterSocials}
+    <a class="social" href={`mailto:${email}`}><span class="pill email">{email}</span></a>
+    {copy.afterEmail}
+  </p>
+</footer>
+
+<style>
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 64px;
+    padding: 88px var(--page-gutter) 96px;
+    background: var(--surface);
+  }
+
+  h2 {
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    max-width: 26.5em;
+    padding-top: 18px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .social {
+    position: relative;
+    display: inline-block;
+    margin: -4px -3px;
+    padding: 4px 3px;
+    border-radius: 999px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .social:focus-visible {
+    outline-offset: 3px;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 1px 9px 2px;
+    border-radius: 999px;
+    background: var(--c);
+    color: #fff;
+    pointer-events: none;
+    transform-origin: 50%;
+    transition:
+      transform 0.18s var(--ease-out),
+      opacity 0.18s ease;
+  }
+
+  .pill.email {
+    background: #f3742b;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .social:hover .pill {
+      opacity: 0.85;
+      transform: scale(0.95) rotate(-2deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pill {
+      transition: opacity 0.18s;
+    }
+
+    .social:hover .pill {
+      transform: none;
+    }
+  }
+
+  @media (width <= 600px) {
+    footer {
+      gap: 32px;
+      padding: 56px 24px 64px;
+    }
+
+    h2 {
+      max-width: 100%;
+      font-size: 32px;
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    h2 br {
+      display: none;
+    }
+
+    p {
+      padding-top: 0;
+    }
+  }
+</style>

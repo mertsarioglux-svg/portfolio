@@ -1,0 +1,130 @@
+---
+import Badge from './Badge.astro';
+import LangSwitch from './LangSwitch.astro';
+import { site } from '../data/site';
+import type { Lang } from '../i18n/lang';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const [intro1, intro2] = site.intro[lang];
+const [edu1, edu2] = site.education[lang];
+---
+
+<section class="hero" aria-label={ui[lang].heroLabel}>
+  <p class="intro">
+    {intro1}<br />{intro2}{' '}
+    <button type="button" class="more" aria-haspopup="dialog" aria-controls="about" data-open-about>
+      {ui[lang].more}
+    </button>
+  </p>
+  <p class="education">{edu1}<br />{edu2}</p>
+  <LangSwitch lang={lang} />
+  <h1 class="name"><span>{site.firstName}</span> <span>{site.lastName}</span></h1>
+  <Badge lang={lang} />
+</section>
+
+<style>
+  .hero {
+    /* İsmin genişliği ekrana göre ölçeklenir; değerler "Mert Sarıoğlu" için ölçüldü. */
+    --name-size: 16.9vw;
+    --name-size-mobile: 24vw;
+
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 560px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .intro,
+  .education {
+    position: absolute;
+    top: 100px;
+    z-index: 3;
+    font-size: 1rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    pointer-events: none;
+  }
+
+  .intro {
+    left: var(--page-gutter);
+  }
+
+  .education {
+    right: var(--page-gutter);
+    text-align: right;
+  }
+
+  .more {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--muted-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: color 0.15s;
+  }
+
+  .more:hover {
+    color: var(--ink);
+  }
+
+  .more:focus-visible {
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .name {
+    position: absolute;
+    bottom: 2.6vw;
+    left: -1.5vw;
+    font-size: var(--name-size);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+  }
+
+  @media (width <= 700px) {
+    .hero {
+      height: 100svh;
+      min-height: 680px;
+    }
+
+    .intro {
+      top: 44px;
+      left: 32px;
+    }
+
+    .education {
+      top: 108px;
+      right: 32px;
+    }
+
+    .name {
+      z-index: 3;
+      bottom: 28px;
+      left: 50%;
+      width: max-content;
+      font-size: var(--name-size-mobile);
+      line-height: 0.88;
+      letter-spacing: -0.035em;
+      white-space: normal;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .name span {
+      display: block;
+    }
+  }
+</style>

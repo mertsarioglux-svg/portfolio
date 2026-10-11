@@ -1,0 +1,60 @@
+---
+title: mobiland
+summary: A furniture comparison site with an AI assistant that brings different brands together in one place. The assistant builds room sets from different brands based on your budget and room.
+date: Sep 2026
+year: '2026'
+order: 3
+tint: '#e3e4ee'
+type: Website · prototype
+stack: Next.js, React, TypeScript, Tailwind CSS, Gemini API
+live: https://mobiland.vercel.app
+repo: https://github.com/mertsarioglux-svg/mobiland
+hero: ../../../assets/work/mobiland/home.webp
+heroAlt: mobiland’s home page with the headline “All brands. One room.”, a search box and a strip of brands.
+previews:
+  - ../../../assets/work/mobiland/home.webp
+  - ../../../assets/work/mobiland/assistant.webp
+  - ../../../assets/work/mobiland/detail.webp
+---
+
+import Facts from '../../../components/case/Facts.astro';
+import Figure from '../../../components/case/Figure.astro';
+import assistant from '../../../assets/work/mobiland/assistant.webp';
+import detail from '../../../assets/work/mobiland/detail.webp';
+import list from '../../../assets/work/mobiland/list.webp';
+
+mobiland is a prototype that brings products from different furniture brands into one site. Products can be compared by brand, category and price, and an AI assistant picks pieces based on your room, budget and style.
+
+The brands and products are fictional and nothing is sold. The catalogue lives in a single file, and the rest of the site only uses that file’s functions, so a real database can replace it later without touching the pages.
+
+## Every product in one place
+
+The product list can be filtered by category and brand, and products can be saved to favourites. Each card shows the dimensions and how many sellers carry it.
+
+<Figure src={list} caption="Product list · 48 products with filters for 7 categories and 8 brands" />
+
+## One product, several sellers
+
+Sellers offering the same product are compared in one table with price and delivery details, and the best deal is highlighted. The product page also lists dimensions, material and style, plus similar products from other brands.
+
+<Figure src={detail} caption="Product page · sellers and prices in one table" />
+
+## An assistant that builds a room within budget
+
+The assistant understands requests like “a living room set for ₺40,000” and picks a sofa, coffee table and lighting from different brands. To build a set, it tries every combination of products for each piece. Among those that fit the budget it picks the most complete one that mixes the most brands. If nothing fits, it suggests the cheapest option and says how far over budget it goes.
+
+<Figure src={assistant} caption="AI assistant · a living room set built for ₺40,000, with ₺1,950 to spare" />
+
+## The AI side
+
+The assistant runs on Google Gemini. The API key stays on the server, and the catalogue is sent along with the system prompt. The model has to answer in a fixed JSON schema (structured output), so its reply can be turned into product cards safely.
+
+If a model on the free tier is busy, the next one is tried. Without a key, or if something fails, a rule-based demo assistant takes over. Message length, chat history and request rate are limited to prevent abuse.
+
+<Facts
+  items={[
+    { value: '48', label: 'products across 8 brands and 7 categories' },
+    { value: '4', label: 'room sets: living room, dining room, bedroom, study corner' },
+    { value: '3 + 1', label: 'models tried in order, plus a fallback demo assistant' },
+  ]}
+/>

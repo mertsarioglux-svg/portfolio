@@ -1,0 +1,149 @@
+---
+import { site } from '../../data/site';
+import { type Lang, homePath, languages } from '../../i18n/lang';
+import { ui } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  /** Bu sayfanın her dildeki adresi */
+  paths: Record<Lang, string>;
+}
+
+const { lang, paths } = Astro.props;
+---
+
+<nav class="island" aria-label={ui[lang].projectNav} data-island>
+  <a class="back" href={`${homePath[lang]}#work`}>
+    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M13 8H3M7 4 3 8l4 4"></path>
+    </svg>
+    {ui[lang].back}
+  </a>
+  <span class="links">
+    {
+      site.socials.map((social) => (
+        <a href={social.href} target="_blank" rel="noopener noreferrer">
+          {social.label}
+        </a>
+      ))
+    }
+    <a href={`mailto:${site.email}`}>{ui[lang].email}</a>
+  </span>
+  <span class="langs">
+    {
+      languages.map((l) => (
+        <a href={paths[l]} hreflang={l} lang={l} aria-current={l === lang ? 'page' : undefined}>
+          {l.toUpperCase()}
+        </a>
+      ))
+    }
+  </span>
+</nav>
+
+<script>
+  // Aşağı kaydırınca gizlenir, yukarı kaydırınca geri gelir.
+  const island = document.querySelector<HTMLElement>('[data-island]');
+  if (island) {
+    let lastY = window.scrollY;
+    let frame = 0;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          const y = window.scrollY;
+          island.classList.toggle('hidden', y > 160 && y > lastY && !island.matches(':focus-within'));
+          lastY = y;
+        });
+      },
+      { passive: true },
+    );
+  }
+</script>
+
+<style>
+  .island {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 999px;
+    background: #0e0e10;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    transition: transform 0.35s var(--ease-out);
+  }
+
+  .island:global(.hidden) {
+    transform: translate(-50%, calc(-100% - 24px));
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+
+  a:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+
+  a:focus-visible {
+    outline-color: #fff;
+    outline-offset: -2px;
+  }
+
+  .back {
+    padding-left: 12px;
+  }
+
+  .links,
+  .langs {
+    display: flex;
+    align-items: center;
+  }
+
+  .links {
+    padding: 0 4px;
+    border-left: 1px solid rgb(255 255 255 / 0.18);
+    border-right: 1px solid rgb(255 255 255 / 0.18);
+  }
+
+  .langs a {
+    color: rgb(255 255 255 / 0.5);
+  }
+
+  .langs a[aria-current] {
+    color: #fff;
+  }
+
+  @media (width <= 640px) {
+    .links {
+      display: none;
+    }
+
+    .langs {
+      padding-left: 4px;
+      border-left: 1px solid rgb(255 255 255 / 0.18);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .island {
+      transition: none;
+    }
+  }
+</style>

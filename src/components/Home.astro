@@ -1,0 +1,28 @@
+---
+import About from './About.astro';
+import Certificates from './Certificates.astro';
+import Footer from './Footer.astro';
+import Hero from './Hero.astro';
+import Projects from './Projects.astro';
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+import { type Lang, t } from '../i18n/lang';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<Base lang={lang} title={`${site.firstName} ${site.lastName}`} description={t(site.meta.description, lang)}>
+  <a class="skip" href="#work">{ui[lang].skip}</a>
+  <main>
+    <Hero lang={lang} />
+    <Projects lang={lang} />
+    <Certificates lang={lang} />
+  </main>
+  <Footer lang={lang} />
+  <About lang={lang} />
+</Base>

@@ -1,0 +1,68 @@
+---
+title: moca
+summary: A 3D store for a fictional streetwear brand inspired by Istanbul’s coffee culture. Every garment was sewn from flat patterns and draped with a cloth simulation, then rendered in real time in the browser.
+date: Oct 2026
+year: '2026'
+order: 1
+tint: '#ece6dc'
+type: Personal project · 3D e-commerce
+stack: React, TypeScript, Three.js, React Three Fiber
+live: https://moca-sage.vercel.app
+repo: https://github.com/mertsarioglux-svg/moca
+hero: ../../../assets/work/moca/rack-tees.webp
+heroAlt: moca’s T-shirt rack; eight T-shirts hang side by side on 3D hangers, one turned to face the viewer.
+previews:
+  - ../../../assets/work/moca/rack-tees.webp
+  - ../../../assets/work/moca/rack-sweats.webp
+  - ../../../assets/work/moca/detail.webp
+---
+
+import Facts from '../../../components/case/Facts.astro';
+import Figure from '../../../components/case/Figure.astro';
+import detail from '../../../assets/work/moca/detail.webp';
+import rackSweats from '../../../assets/work/moca/rack-sweats.webp';
+
+moca is a fictional streetwear brand inspired by Istanbul’s coffee culture. The products in the store aren’t photos or 2D mockups: every garment was sewn from flat pattern pieces, draped on a hanger with a cloth simulation and rendered in real time 3D in the browser.
+
+I wanted to bring the feeling of standing in front of a clothing rack to the screen. Garments hang sideways; hover one and it turns to face you while its neighbours gently swing.
+
+## Shopping from the rack
+
+- There are two racks: T-shirts, and Long Sleeves & Sweatshirts, with 8 products each.
+- Hovering a garment turns it around its hanger hook. Neighbouring hangers slide along the rail and swing like pendulums.
+- Clicking opens a detail view: the background blurs like frosted glass, the product can be dragged to rotate 360°, and arrows or the keyboard move to the next item.
+- There’s also size selection, a cart, a free-shipping bar and a demo checkout. On mobile the rail scrolls with your finger.
+
+<Figure src={detail} caption="Detail view · drag to rotate the garment while the background blurs like frosted glass" />
+
+## How the garments were made
+
+All geometry is generated offline with Node scripts before it reaches the browser. The browser only downloads the finished models (GLB).
+
+1. **Pattern:** Front and back bodies and sleeves are drawn as 2D polygons with real measurements. Collar, cuff and hem allowances are marked by edge type.
+2. **Triangulation:** Each piece becomes an even mesh with roughly 1.3 cm spacing using constrained Delaunay triangulation.
+3. **Simulation:** An XPBD-based cloth solver handles stretch and bending constraints, seams, contact with the hanger and self-collision.
+4. **Post-processing:** Seams are smoothed, real fabric thickness is added and ambient occlusion is baked with ray tracing.
+5. **Export:** With compressed attributes, each garment ends up at about 280–360 KB.
+
+<Facts
+  items={[
+    { value: '16', label: 'garments, each sewn from a pattern and draped by simulation' },
+    { value: '~1.3 cm', label: 'spacing between points in the cloth mesh' },
+    { value: '280–360 KB', label: 'model size per garment' },
+  ]}
+/>
+
+## Garments never touch
+
+When a garment turns forward, its sleeves mustn’t pass through its neighbours. Each model is sliced into 7 cm horizontal bands to build a “footprint”. Every frame, those footprints are rotated with the garment’s current turn and swing, and the closest distance two neighbours can sit without touching is computed; hangers slide to exactly those positions.
+
+I stress-tested it with fast, slow and random mouse movement. The smallest measured gap is 1.3 cm, with no overlap in any frame.
+
+<Figure src={rackSweats} caption="Sweatshirt rack · garments are draped over an invisible body form" />
+
+## How the fabric looks
+
+The fabric is drawn with layers added on top of Three.js’s `MeshPhysicalMaterial`: jersey knit texture, storage creases, rib and twin-needle stitching, raised screen prints, heather yarn and cotton sheen.
+
+All textures and print designs are generated in code at runtime; no image files are downloaded. The fonts used in the prints are subset to include Turkish characters.

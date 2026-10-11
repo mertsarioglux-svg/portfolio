@@ -1,0 +1,57 @@
+---
+title: Telve
+summary: Bir kahve dükkânı için sadakat uygulaması. Müşteri QR’ını gösteriyor, barista okutuyor, her 10 kahvede 1’i hediye. Müşteri uygulaması, kasa ekranı ve sunucu tek projede.
+date: Eylül 2026
+year: '2026'
+order: 2
+tint: '#dce5d8'
+type: Mobil web uygulaması (PWA)
+stack: Next.js, React, TypeScript, PostgreSQL
+live: https://telve-phi.vercel.app
+repo: https://github.com/mertsarioglux-svg/telve
+hero: ../../../assets/work/telve/hero.webp
+heroAlt: Telve uygulamasının üç ekranı; karşılama, 9/10 damgalı sadakat kartı ve tek kullanımlık QR pasosu.
+previews:
+  - ../../../assets/work/telve/preview-card.webp
+  - ../../../assets/work/telve/preview-qr.webp
+  - ../../../assets/work/telve/preview-gift.webp
+---
+
+import Facts from '../../../components/case/Facts.astro';
+import Figure from '../../../components/case/Figure.astro';
+import cashier from '../../../assets/work/telve/cashier.webp';
+
+Telve, her 10 kahvede 1 kahvenin hediye olduğu bir sadakat uygulaması. Müşteri telefonundaki QR’ı gösteriyor, barista kasada okutuyor, damga anında hesaba düşüyor.
+
+Uygulama mağazası gerekmiyor: telefonda “Ana ekrana ekle” ile uygulama gibi açılıyor (PWA). Müşteri tarafında kayıt ve giriş, sadakat kartı, QR pasosu, ödüller, şube bilgileri, profil, KVKK metni ve hesap silme var. Kasa tarafı ayrı bir ekran.
+
+## Nasıl çalışıyor?
+
+1. Müşteri “QR kodumu göster”e basıyor. Sunucu 60 saniye geçerli, 7 haneli rastgele bir kod üretip müşteriye bağlıyor. QR’da kimlik bilgisi yok, yalnızca bu kod var.
+2. Barista kodu kasada kamerayla okutuyor ya da elle giriyor. Ekranda müşterinin adı, damga durumu ve hediye hakkı görünüyor.
+3. Kahve adedi seçilip onaylanınca damga ekleme, 10’a ulaşınca hediye verme ve kodu “kullanıldı” işaretleme tek bir veritabanı işleminde yapılıyor.
+4. Müşterinin telefonu birkaç saniyede bir sunucuya soruyor. Kart dolduysa ekranda “Bir kahve bizden.” kutlaması açılıyor.
+
+<Figure src={cashier} caption="Kasa · kod okutuldu, kart tamamlandı; müşterinin ekranında hediye kutlaması açıldı" />
+
+## Güvenlik kararları
+
+- QR’da müşterinin kimliği yok; yalnızca 60 saniye geçerli, tek kullanımlık bir kod var. Ekran görüntüsü işe yaramıyor.
+- Damga ve hediye kuralları sunucuda çalışıyor. Uygulama “10’a ulaştım” diyemez, bunu sunucu hesaplıyor.
+- Okutma tek bir veritabanı işleminde (transaction) yapılıyor. İki kasa aynı kodu aynı anda okutsa bile yalnızca biri geçiyor.
+- Kasa API’lerini yalnızca kasiyer rolündeki hesaplar kullanabiliyor; müşteri kendine damga ekleyemiyor.
+- Şifreler scrypt ile özetlenerek saklanıyor. Oturum ve şifre sıfırlama belirteçlerinin de yalnızca SHA-256 özeti veritabanında duruyor.
+
+<Facts
+  items={[
+    { value: '60 sn', label: 'QR kodunun geçerlilik süresi; her kod tek kullanımlık' },
+    { value: '10 → 1', label: 'her 10 kahvede 1 kahve hediye' },
+    { value: '1 işlem', label: 'damga, hediye ve kod kontrolü tek transaction’da' },
+  ]}
+/>
+
+## Altyapı
+
+Next.js’in API rotaları sunucu tarafını, React bileşenleri müşteri ve kasa ekranlarını oluşturuyor. Yerelde veritabanı kurmaya gerek yok: bağlantı adresi verilmezse proje gömülü bir Postgres (PGlite) kullanıyor. Yayında Supabase ya da Neon’a bağlanıp Vercel’de çalışıyor.
+
+Sunumlar için hazır demo hesaplar var; tek komutla ilk hâllerine dönüyorlar. Şifre sıfırlama e-postaları Resend ile gönderiliyor; anahtar tanımlı değilse bağlantı sunucu konsoluna yazılıyor.

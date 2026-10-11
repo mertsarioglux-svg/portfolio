@@ -1,0 +1,68 @@
+---
+title: moca
+summary: İstanbul’un kahve kültüründen ilham alan hayalî bir streetwear markası için 3D mağaza. Kıyafetler düz kalıplardan dikilip kumaş simülasyonuyla askıya asıldı ve tarayıcıda gerçek zamanlı çalışıyor.
+date: Ekim 2026
+year: '2026'
+order: 1
+tint: '#ece6dc'
+type: Kişisel proje · 3D e-ticaret
+stack: React, TypeScript, Three.js, React Three Fiber
+live: https://moca-sage.vercel.app
+repo: https://github.com/mertsarioglux-svg/moca
+hero: ../../../assets/work/moca/rack-tees.webp
+heroAlt: moca’nın tişört askılığı; sekiz tişört 3D askılarda yan yana asılı, biri öne dönmüş.
+previews:
+  - ../../../assets/work/moca/rack-tees.webp
+  - ../../../assets/work/moca/rack-sweats.webp
+  - ../../../assets/work/moca/detail.webp
+---
+
+import Facts from '../../../components/case/Facts.astro';
+import Figure from '../../../components/case/Figure.astro';
+import detail from '../../../assets/work/moca/detail.webp';
+import rackSweats from '../../../assets/work/moca/rack-sweats.webp';
+
+moca, İstanbul’un kahve kültüründen ilham alan hayalî bir streetwear markası. Mağazadaki ürünler fotoğraf ya da 2D maket değil: her kıyafet düz kalıp parçalarından dikilip kumaş simülasyonuyla askıya asıldı ve tarayıcıda gerçek zamanlı 3D olarak çiziliyor.
+
+Amacım bir mağaza rafının önünde durma hissini ekrana taşımaktı. Kıyafetler askıda yandan duruyor; üzerine gelince öne dönüyor, komşuları hafifçe sallanıyor.
+
+## Askılıkta alışveriş
+
+- İki askılık var: Tişörtler ile Uzun Kollu & Sweatshirt. Her birinde 8 ürün bulunuyor.
+- Fare bir kıyafetin üzerine gelince kıyafet askı kancasının etrafında öne dönüyor. Komşu askılar ray boyunca kayıyor ve sarkaç gibi sallanıyor.
+- Tıklayınca açılan detay ekranında arka plan buzlu cam gibi bulanıklaşıyor. Ürün 360° sürüklenerek döndürülebiliyor; oklarla ya da klavyeyle diğer ürünlere geçiliyor.
+- Beden seçimi, sepet, ücretsiz kargo çubuğu ve demo ödeme akışı da var. Mobilde ray parmakla kaydırılıyor.
+
+<Figure src={detail} caption="Detay ekranı · ürün sürüklenerek çevriliyor, arka plan buzlu cam gibi bulanıklaşıyor" />
+
+## Kıyafetler nasıl üretildi?
+
+Tüm geometri, tarayıcıya gelmeden önce Node betikleriyle çevrimdışı üretiliyor. Tarayıcı yalnızca sonuç modellerini (GLB) indiriyor.
+
+1. **Kalıp:** Ön ve arka beden ile kol parçaları gerçek ölçülerle 2D poligon olarak çiziliyor. Yaka, manşet ve etek payları kenar türleriyle işaretleniyor.
+2. **Üçgenleme:** Her parça kısıtlı Delaunay üçgenlemesiyle yaklaşık 1,3 cm aralıklı düzgün bir ağa dönüşüyor.
+3. **Simülasyon:** XPBD tabanlı bir kumaş çözücü kullanılıyor. Gerilme ve eğilme kısıtları, dikişler, askıyla temas ve kumaşın kendi kendine çarpışması hesaplanıyor.
+4. **Son işlem:** Dikiş bölgeleri yumuşatılıyor, gerçek kumaş kalınlığı ekleniyor, ortam gölgesi (AO) ışın izlemeyle pişiriliyor.
+5. **Dışa aktarım:** Sıkıştırılmış özniteliklerle kıyafet başına yaklaşık 280–360 KB’lık modeller çıkıyor.
+
+<Facts
+  items={[
+    { value: '16', label: 'kıyafet; hepsi kalıptan dikilip simülasyonla asıldı' },
+    { value: '~1,3 cm', label: 'kumaş ağındaki noktaların aralığı' },
+    { value: '280–360 KB', label: 'kıyafet başına model boyutu' },
+  ]}
+/>
+
+## Kıyafetler birbirine değmiyor
+
+Bir kıyafet öne dönerken kolları komşularının içinden geçmemeli. Bunun için her model 7 cm’lik yatay dilimlere bölünüp bir “ayak izi” çıkarılıyor. Her karede bu izler kıyafetin o anki dönüşüne göre çevriliyor ve iki komşunun değmeden durabileceği en yakın mesafe hesaplanıyor; askılar tam bu konumlara kayıyor.
+
+Bunu hızlı, yavaş ve rastgele fare hareketleriyle stres testine soktum. Ölçülen en küçük boşluk 1,3 cm; hiçbir karede çakışma yok.
+
+<Figure src={rackSweats} caption="Sweatshirt askılığı · kıyafetler görünmez bir gövde formu üzerinde asıldı" />
+
+## Kumaş görünümü
+
+Kumaş, Three.js’in `MeshPhysicalMaterial`’ı üzerine eklenen katmanlarla çiziliyor: jarse örgü dokusu, saklama kırışıklıkları, ribana ve çift iğne dikiş izleri, kabartmalı serigrafi baskılar, melanj iplik ve pamuk parlaklığı.
+
+Tüm dokular ve baskı tasarımları çalışma anında kodla üretiliyor; hiç görsel dosyası indirilmiyor. Baskılardaki fontlar Türkçe karakterleri de içeren alt kümelerle paketlendi.

@@ -1,0 +1,60 @@
+---
+title: mobiland
+summary: Farklı mobilya markalarını tek yerde toplayan, AI asistanlı bir karşılaştırma sitesi. Asistan bütçene ve odana göre farklı markalardan set kuruyor.
+date: Eylül 2026
+year: '2026'
+order: 3
+tint: '#e3e4ee'
+type: Web sitesi · prototip
+stack: Next.js, React, TypeScript, Tailwind CSS, Gemini API
+live: https://mobiland.vercel.app
+repo: https://github.com/mertsarioglux-svg/mobiland
+hero: ../../../assets/work/mobiland/home.webp
+heroAlt: mobiland ana sayfası; “Bütün markalar. Tek bir oda.” başlığı, arama kutusu ve marka şeridi.
+previews:
+  - ../../../assets/work/mobiland/home.webp
+  - ../../../assets/work/mobiland/assistant.webp
+  - ../../../assets/work/mobiland/detail.webp
+---
+
+import Facts from '../../../components/case/Facts.astro';
+import Figure from '../../../components/case/Figure.astro';
+import assistant from '../../../assets/work/mobiland/assistant.webp';
+import detail from '../../../assets/work/mobiland/detail.webp';
+import list from '../../../assets/work/mobiland/list.webp';
+
+mobiland, farklı mobilya markalarının ürünlerini tek bir sitede toplayan bir prototip. Ürünler markaya, kategoriye ve fiyata göre karşılaştırılıyor; bir AI asistan odana, bütçene ve tarzına göre seçim yapıyor.
+
+Markalar ve ürünler hayalî, satış yapılmıyor. Katalog tek bir dosyada duruyor ve sitenin geri kalanı yalnızca o dosyanın fonksiyonlarını kullanıyor. Böylece ileride yerine gerçek bir veritabanı gelse de sayfalar değişmeyecek.
+
+## Tüm ürünler, tek yerde
+
+Ürün listesi kategoriye ve markaya göre süzülebiliyor, beğenilen ürünler favorilere ekleniyor. Her ürün kartında ölçüler ve kaç satıcıda bulunduğu yazıyor.
+
+<Figure src={list} caption="Ürün listesi · 48 ürün, 7 kategori ve 8 marka süzgeci" />
+
+## Bir ürün, birden fazla satıcı
+
+Aynı ürünü satan satıcılar fiyat ve teslimat bilgileriyle tek tabloda karşılaştırılıyor; en uygun olan işaretleniyor. Ürün sayfasında ölçü, malzeme ve tarz bilgileri ile diğer markalardan benzer ürünler de var.
+
+<Figure src={detail} caption="Ürün detayı · satıcılar ve fiyatlar tek tabloda" />
+
+## Bütçeye göre oda seti kuran asistan
+
+Asistan “40.000 ₺ salon seti” gibi bir isteği anlayıp kanepe, sehpa ve aydınlatmayı farklı markalardan seçiyor. Set kurulurken her parça için tüm ürün kombinasyonları deneniyor. Bütçeye sığanlar arasından en dolu ve en çok markayı karıştıran seçiliyor. Sığan bir kombinasyon yoksa en ucuzu öneriliyor ve bütçenin ne kadar aşıldığı söyleniyor.
+
+<Figure src={assistant} caption="AI asistan · 40.000 ₺ bütçeyle kurulan salon seti; 1.950 ₺ artıyor" />
+
+## AI tarafı
+
+Asistan Google Gemini ile çalışıyor. API anahtarı sunucuda kalıyor ve katalog sistem mesajıyla birlikte gönderiliyor. Model, belirli bir JSON şablonuna uyan bir cevap vermek zorunda (structured output); böylece cevap güvenle ürün kartlarına çevriliyor.
+
+Ücretsiz katmanda bir model yoğunsa sıradakine geçiliyor. Anahtar yoksa ya da bir hata olursa kural tabanlı bir demo asistan devreye giriyor. Kötüye kullanıma karşı mesaj uzunluğu, sohbet geçmişi ve istek sayısı sınırlanıyor.
+
+<Facts
+  items={[
+    { value: '48', label: 'ürün; 8 marka ve 7 kategoride' },
+    { value: '4', label: 'oda seti: salon, yemek odası, yatak odası, çalışma köşesi' },
+    { value: '3 + 1', label: 'sırayla denenen model ve yedek demo asistan' },
+  ]}
+/>

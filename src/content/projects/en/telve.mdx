@@ -1,0 +1,57 @@
+---
+title: Telve
+summary: A loyalty app for a coffee shop. The customer shows a QR code, the barista scans it, and every 10th coffee is free. Customer app, cashier screen and server in one project.
+date: Sep 2026
+year: '2026'
+order: 2
+tint: '#dce5d8'
+type: Mobile web app (PWA)
+stack: Next.js, React, TypeScript, PostgreSQL
+live: https://telve-phi.vercel.app
+repo: https://github.com/mertsarioglux-svg/telve
+hero: ../../../assets/work/telve/hero.webp
+heroAlt: Three screens of the Telve app; welcome, a loyalty card at 9/10 stamps and a single-use QR pass.
+previews:
+  - ../../../assets/work/telve/preview-card.webp
+  - ../../../assets/work/telve/preview-qr.webp
+  - ../../../assets/work/telve/preview-gift.webp
+---
+
+import Facts from '../../../components/case/Facts.astro';
+import Figure from '../../../components/case/Figure.astro';
+import cashier from '../../../assets/work/telve/cashier.webp';
+
+Telve is a loyalty app where every 10th coffee is free. The customer shows the QR code on their phone, the barista scans it at the till, and the stamp lands on the account instantly.
+
+No app store needed: “Add to Home Screen” opens it like a native app (PWA). The customer side has sign-up and login, the loyalty card, a QR pass, rewards, store info, a profile, the privacy notice and account deletion. The cashier side is a separate screen.
+
+## How it works
+
+1. The customer taps “Show my QR code”. The server generates a random 7-digit code that is valid for 60 seconds and ties it to the customer. The QR holds no identity, only that code.
+2. The barista scans the code with the camera or types it in. The screen shows the customer’s name, stamp count and available rewards.
+3. When the number of coffees is confirmed, adding stamps, granting a reward at 10 and marking the code as used all happen in a single database transaction.
+4. The customer’s phone checks with the server every few seconds. If the card is full, a “This one’s on us.” celebration opens.
+
+<Figure src={cashier} caption="Cashier · code scanned, card completed; the reward celebration opens on the customer’s phone" />
+
+## Security decisions
+
+- The QR holds no customer identity, only a single-use code valid for 60 seconds. A screenshot is useless.
+- Stamp and reward rules run on the server. The app can’t claim “I reached 10”; the server calculates it.
+- Scanning happens in one database transaction. Even if two tills scan the same code at the same moment, only one goes through.
+- Only cashier accounts can use the till APIs, so customers can’t stamp their own cards.
+- Passwords are hashed with scrypt. Session and password-reset tokens are stored only as SHA-256 hashes.
+
+<Facts
+  items={[
+    { value: '60 s', label: 'QR code lifetime; every code works once' },
+    { value: '10 → 1', label: 'one free coffee for every ten' },
+    { value: '1 transaction', label: 'stamps, rewards and code checks happen together' },
+  ]}
+/>
+
+## Under the hood
+
+Next.js API routes handle the server side, and React components build the customer and cashier screens. Locally there’s no database to set up: without a connection string the project uses an embedded Postgres (PGlite). In production it connects to Supabase or Neon and runs on Vercel.
+
+Demo accounts are ready for presentations and reset with a single command. Password-reset emails are sent with Resend; without an API key the link is printed to the server console.

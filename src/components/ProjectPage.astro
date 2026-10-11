@@ -1,0 +1,420 @@
+---
+import { getImage, Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Footer from './Footer.astro';
+import NavIsland from './case/NavIsland.astro';
+import SectionPill from './case/SectionPill.astro';
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+import { type Lang, projectPath } from '../i18n/lang';
+import { ui } from '../i18n/ui';
+import { type Project, slugOf } from '../lib/projects';
+
+interface Props {
+  lang: Lang;
+  project: Project;
+  next: Project;
+}
+
+const { lang, project, next } = Astro.props;
+const { data } = project;
+const slug = slugOf(project);
+const paths = { tr: projectPath('tr', slug), en: projectPath('en', slug) };
+const { Content, headings } = await render(project);
+const sections = [{ slug: 'context', text: ui[lang].context }, ...headings.filter((h) => h.depth === 2)];
+const host = new URL(data.live).host;
+const ogImage = await getImage({ src: data.hero, width: 1200, format: 'jpeg' });
+---
+
+<Base
+  lang={lang}
+  title={`${data.title} — ${site.firstName} ${site.lastName}`}
+  description={data.summary}
+  paths={paths}
+  image={ogImage.src}
+>
+  <a class="skip" href="#content">{ui[lang].skipContent}</a>
+  <NavIsland lang={lang} paths={paths} />
+
+  <header class="project-hero" style={`--tint:${data.tint}`}>
+    <div class="intro">
+      <h1>{data.title}</h1>
+      <p class="summary">{data.summary}</p>
+      <div class="pills">
+        <span class="pill">{data.date}</span>
+        <a class="pill pill-dark" href={data.live} target="_blank" rel="noopener noreferrer">
+          {host}
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"></path></svg>
+        </a>
+        <a class="pill" href={data.repo} target="_blank" rel="noopener noreferrer">
+          {ui[lang].sourceCode}
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"></path></svg>
+        </a>
+      </div>
+    </div>
+    <div class="shot">
+      <Image
+        src={data.hero}
+        alt={data.heroAlt}
+        widths={[800, 1200, 1600, 2000]}
+        sizes="(min-width: 1180px) 1100px, 94vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  </header>
+
+  <main id="content" class="case" style={`--tint:${data.tint}`}>
+    <section aria-labelledby="context">
+      <h2 id="context" class="section-title"><span class="num">00</span>{ui[lang].context}</h2>
+      <dl class="meta">
+        <div>
+          <dt>{ui[lang].type}</dt>
+          <dd>{data.type}</dd>
+        </div>
+        <div>
+          <dt>{ui[lang].stack}</dt>
+          <dd>{data.stack}</dd>
+        </div>
+        <div>
+          <dt>{ui[lang].year}</dt>
+          <dd>{data.year}</dd>
+        </div>
+      </dl>
+    </section>
+    <div class="prose">
+      <Content />
+    </div>
+  </main>
+
+  <a class="next" href={projectPath(lang, slugOf(next))} style={`--tint:${next.data.tint}`}>
+    <span class="next-kicker">{ui[lang].nextProject}</span>
+    <span class="next-title">
+      {next.data.title}
+      <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"></path></svg>
+    </span>
+    <span class="next-summary">{next.data.summary}</span>
+  </a>
+
+  <Footer lang={lang} />
+  <SectionPill lang={lang} sections={sections} />
+</Base>
+
+<style>
+  .project-hero {
+    padding: 136px var(--page-gutter) 0;
+    background: linear-gradient(var(--tint) calc(100% - 120px), transparent calc(100% - 120px));
+    text-align: center;
+  }
+
+  .intro {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: clamp(48px, 7vw, 88px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .summary {
+    margin-top: 20px;
+    color: #4f4c57;
+    font-size: 17px;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 14px;
+    line-height: 1.2;
+    transition:
+      transform 0.18s var(--ease-out),
+      opacity 0.18s;
+  }
+
+  .pill-dark {
+    background: #0e0e10;
+    color: #fff;
+  }
+
+  a.pill:hover {
+    opacity: 0.85;
+    transform: scale(0.97);
+  }
+
+  .shot {
+    max-width: 1100px;
+    margin: 56px auto 0;
+  }
+
+  .shot :global(img) {
+    width: 100%;
+    border: 1px solid rgb(0 0 0 / 0.08);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 40px 80px -48px rgb(0 0 0 / 0.45);
+  }
+
+  .case {
+    width: min(600px, calc(100vw - 48px));
+    margin: 0 auto;
+    padding: 112px 0 136px;
+  }
+
+  .section-title,
+  .prose :global(h2) {
+    position: relative;
+    margin: 0 0 32px;
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    scroll-margin-top: 96px;
+  }
+
+  .num,
+  .prose :global(h2)::before {
+    position: absolute;
+    top: 0;
+    right: calc(100% + 108px);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .section-title::after,
+  .prose :global(h2)::after {
+    content: '';
+    position: absolute;
+    top: 0.6em;
+    right: calc(100% + 28px);
+    width: 64px;
+    border-top: 1px solid currentColor;
+    opacity: 0.4;
+  }
+
+  .prose {
+    counter-reset: section;
+  }
+
+  .prose :global(h2) {
+    margin-top: 128px;
+    counter-increment: section;
+  }
+
+  .prose :global(h2)::before {
+    content: counter(section, decimal-leading-zero);
+  }
+
+  .prose :global(h3) {
+    margin: 48px 0 12px;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: space-between;
+    gap: 24px;
+    margin: 0 0 48px;
+  }
+
+  .meta dt {
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .meta dd {
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .prose :global(p),
+  .prose :global(li) {
+    color: #3f3c46;
+    font-size: 17px;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  .prose :global(p + p) {
+    margin-top: 18px;
+  }
+
+  .prose :global(strong) {
+    color: var(--ink);
+    font-weight: 550;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 24px 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .prose :global(ol) {
+    counter-reset: step;
+  }
+
+  .prose :global(li) {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .prose :global(li + li) {
+    margin-top: 12px;
+  }
+
+  .prose :global(ul > li)::before {
+    content: '';
+    position: absolute;
+    top: 0.72em;
+    left: 4px;
+    width: 8px;
+    border-top: 1px solid currentColor;
+  }
+
+  .prose :global(ol > li) {
+    counter-increment: step;
+  }
+
+  .prose :global(ol > li)::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    color: var(--muted-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prose :global(code) {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #efeef2;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 0.82em;
+  }
+
+  .next {
+    display: block;
+    padding: 96px var(--page-gutter);
+    background: var(--tint);
+    text-align: center;
+    transition: background 0.3s;
+  }
+
+  .next-kicker {
+    display: block;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .next-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: clamp(44px, 6vw, 72px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .next-title svg {
+    transition: transform 0.25s var(--ease-out);
+  }
+
+  .next:hover .next-title svg {
+    transform: translateX(8px);
+  }
+
+  .next-summary {
+    display: block;
+    max-width: 560px;
+    margin: 20px auto 0;
+    color: #4f4c57;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  @media (width <= 1100px) {
+    .num,
+    .prose :global(h2)::before {
+      position: static;
+      display: block;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .section-title::after,
+    .prose :global(h2)::after {
+      display: none;
+    }
+  }
+
+  @media (width <= 600px) {
+    .project-hero {
+      padding-top: 104px;
+      background: linear-gradient(var(--tint) calc(100% - 48px), transparent calc(100% - 48px));
+    }
+
+    .shot {
+      margin-top: 40px;
+    }
+
+    .case {
+      padding: 72px 0 96px;
+    }
+
+    .section-title,
+    .prose :global(h2) {
+      font-size: 32px;
+    }
+
+    .prose :global(h2) {
+      margin-top: 96px;
+    }
+
+    .meta {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .prose :global(p),
+    .prose :global(li) {
+      font-size: 16px;
+    }
+
+    .next {
+      padding: 72px 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pill,
+    .next-title svg {
+      transition: none;
+    }
+  }
+</style>
