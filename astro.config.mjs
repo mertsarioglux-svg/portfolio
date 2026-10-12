@@ -6,6 +6,10 @@ export default defineConfig({
   // Yayına alınca gerçek alan adını buraya yaz (canonical ve hreflang linkleri için).
   site: 'https://example.com',
   trailingSlash: 'ignore',
+  // Stiller ayrı dosya yerine sayfanın içine gömülür. Vercel /_astro/ altındaki yanıtları (404 dahil)
+  // tarayıcıda bir yıl sakladığı için, dağıtım anında açılan sayfa stil dosyasını "bulunamadı" olarak
+  // saklayıp stilsiz kalabiliyordu. Sayfa her açılışta yeniden doğrulandığı için stiller hep güncel gelir.
+  build: { inlineStylesheets: 'always' },
   devToolbar: { enabled: false },
   integrations: [mdx()],
   vite: {
